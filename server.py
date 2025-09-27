@@ -22,23 +22,31 @@ def ask():
 
         body = {
             "model": "deepseek-chat",
-            "messages": [{"role": "user", "content": prompt}]
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.7
         }
 
-        r = requests.post("https://api.deepseek.com/chat/completions", 
+        r = requests.post("https://api.deepseek.com/v1/chat/completions",
                           headers=headers, json=body)
 
         if r.status_code == 200:
             res = r.json()
             return jsonify({"response": res["choices"][0]["message"]["content"]})
         else:
-            return jsonify({"error": "Error al consultar DeepSeek", 
-                            "details": r.text}), 400
+            return jsonify({
+                "error": "Error al consultar DeepSeek",
+                "details": r.text
+            }), r.status_code
     except Exception as e:
-        return jsonify({"error": "Error en el servidor", "details": str(e)}), 500
+        return jsonify({
+            "error": "Error en el servidor",
+            "details": str(e)
+        }), 500
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
 
 
 

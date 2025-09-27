@@ -4,10 +4,8 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# 🚀 Leer API KEY de las variables de entorno
-API_KEY = os.getenv("DEEPSEEK_API_KEY")
-print("API Key cargada:", API_KEY)  # 👈 línea de prueba
-
+# 👉 Aquí va tu API Key de OpenRouter
+API_KEY = os.getenv("OPENROUTER_API_KEY", "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")
 
 @app.route("/ask", methods=["POST"])
 def ask():
@@ -21,28 +19,21 @@ def ask():
         }
 
         body = {
-            "model": "deepseek-chat",
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.7
+            "model": "meta-llama/llama-3-8b-instruct:free",  # modelo gratis
+            "messages": [{"role": "user", "content": prompt}]
         }
 
-        r = requests.post("https://api.deepseek.com/v1/chat/completions",
+        r = requests.post("https://openrouter.ai/api/v1/chat/completions",
                           headers=headers, json=body)
 
         if r.status_code == 200:
             res = r.json()
             return jsonify({"response": res["choices"][0]["message"]["content"]})
         else:
-            return jsonify({
-                "error": "Error al consultar DeepSeek",
-                "details": r.text
-            }), r.status_code
+            return jsonify({"error": "Error al consultar OpenRouter", 
+                            "details": r.text}), 400
     except Exception as e:
-        return jsonify({
-            "error": "Error en el servidor",
-            "details": str(e)
-        }), 500
-
+        return jsonify({"error": "Error en el servidor", "details": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

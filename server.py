@@ -6,6 +6,8 @@ app = Flask(__name__)
 
 # 🚀 Leer API KEY de las variables de entorno
 API_KEY = os.getenv("DEEPSEEK_API_KEY")
+print("API Key cargada:", API_KEY)  # 👈 línea de prueba
+
 
 @app.route("/ask", methods=["POST"])
 def ask():
@@ -37,6 +39,7 @@ def ask():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
 
 
 
